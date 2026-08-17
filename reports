@@ -1,0 +1,62 @@
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+import os
+
+
+def generate_report(
+    filename,
+    ats_score,
+    found_skills,
+    missing_skills,
+    suggestions
+):
+    # Create the reports folder if it doesn't exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    # Create PDF document
+    doc = SimpleDocTemplate(filename)
+    styles = getSampleStyleSheet()
+
+    story = []
+
+    # Title
+    story.append(Paragraph("AI Resume Analysis Report", styles["Title"]))
+    story.append(Spacer(1, 12))
+
+    # ATS Score
+    story.append(Paragraph(f"<b>ATS Score:</b> {ats_score}%", styles["Heading2"]))
+    story.append(Spacer(1, 12))
+
+    # Skills Found
+    story.append(Paragraph("Skills Found", styles["Heading2"]))
+
+    if found_skills:
+        for skill in found_skills:
+            story.append(Paragraph(f"• {skill}", styles["BodyText"]))
+    else:
+        story.append(Paragraph("No skills found.", styles["BodyText"]))
+
+    story.append(Spacer(1, 12))
+
+    # Missing Skills
+    story.append(Paragraph("Missing Skills", styles["Heading2"]))
+
+    if missing_skills:
+        for skill in missing_skills:
+            story.append(Paragraph(f"• {skill}", styles["BodyText"]))
+    else:
+        story.append(Paragraph("No missing skills.", styles["BodyText"]))
+
+    story.append(Spacer(1, 12))
+
+    # Suggestions
+    story.append(Paragraph("Resume Improvement Suggestions", styles["Heading2"]))
+
+    if suggestions:
+        for suggestion in suggestions:
+            story.append(Paragraph(f"• {suggestion}", styles["BodyText"]))
+    else:
+        story.append(Paragraph("No suggestions available.", styles["BodyText"]))
+
+    # Build PDF
+    doc.build(story)
